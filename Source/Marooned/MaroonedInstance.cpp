@@ -2,7 +2,7 @@
 
 
 #include "MaroonedInstance.h"
-#include "Marooned/Crafting/CraftingMatrix.h"
+#include "Crafting/CraftingMatrix.h"
 
 void UMaroonedInstance::Init()
 {
