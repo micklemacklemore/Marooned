@@ -37,7 +37,7 @@ void CraftingMatrix::Initialize()
     // Now every future line will start with the key, followed by the values
     while (getline(file, line))
     {
-        int resourceKey1Idx = 1;
+        int resourceKey1Idx = 0;
         istringstream iss2(line);
         getline(iss2, resourceKey2, ',');
         while (getline(iss2, resourceVal, ','))
