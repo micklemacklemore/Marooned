@@ -77,7 +77,6 @@ ACraftable* UCraftingSpawner::Craft(
     TSubclassOf<ACraftable> CraftableClass = CraftingNamesToClasses[FString(craftResultName.c_str())];
     
     // Spawn the crafted instance
-    FActorSpawnParameters SpawnParams;
     ACraftable* CraftedInstance = World->SpawnActor<ACraftable>(CraftableClass, transform);
 
     // Destroy the input craftables
