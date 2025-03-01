@@ -8,4 +8,5 @@ void UMaroonedInstance::Init()
 {
     Super::Init();
     CraftingMatrix::Initialize();
+    CraftingSpawner = NewObject<UCraftingSpawner>(this);
 }
