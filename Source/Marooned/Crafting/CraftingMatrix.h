@@ -5,13 +5,10 @@
 #include "CoreMinimal.h"
 #include <unordered_map>
 #include <string>
-#include <fstream>
-#include <sstream>
 #include <vector>
-using std::unordered_map;
+
 using std::string;
-using std::ifstream;
-using std::istringstream;
+using std::unordered_map;
 using std::vector;
 
 /**
@@ -21,6 +18,8 @@ class MAROONED_API CraftingMatrix
 {
 public:
 	static void Initialize();
+	static string GetCraftingResult(string resource1, string resource2);
+	static constexpr const char* NONE = "None";
 
 private:
 	CraftingMatrix() = delete;
