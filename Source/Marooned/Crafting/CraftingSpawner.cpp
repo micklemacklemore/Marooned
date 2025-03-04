@@ -3,6 +3,7 @@
 
 #include "Crafting/CraftingSpawner.h"
 #include "Crafting/CraftingMatrix.h"
+#include "Crafting/CraftingLog.h"
 #include <string>
 #include "AssetRegistry/AssetRegistryModule.h"
 
@@ -82,6 +83,9 @@ ACraftable* UCraftingSpawner::Craft(
     // Destroy the input craftables
     craftableA->Destroy();
     craftableB->Destroy();
+
+    // Log the crafting
+    UCraftingLog::AddLogEntry(craftableA->GetClass(), craftableB->GetClass(), CraftableClass);
     
     return CraftedInstance;
 }
