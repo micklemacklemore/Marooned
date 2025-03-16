@@ -79,7 +79,7 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Marooned")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Marooned")
 	void OnSwitchWeapon(int weaponIndex);
 };
 

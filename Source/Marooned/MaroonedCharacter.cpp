@@ -140,17 +140,18 @@ void AMaroonedCharacter::SwitchWeapon(const FInputActionValue& Value)
 	if (Weapons.Num() == 0) return;
 
 	float value = Value.Get<float>();
+	int index = 0; 
 
 	if (value > 0.f)
 	{
 		// Cycle backward (handling negative indices correctly)
-		CurrentWeaponIndex = (CurrentWeaponIndex - 1 + Weapons.Num()) % Weapons.Num();
+		index = (CurrentWeaponIndex - 1 + Weapons.Num()) % Weapons.Num();
 	}
 	else if (value < 0.f)
 	{
 		// Cycle forward
-		CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
+		index = (CurrentWeaponIndex + 1) % Weapons.Num();
 	}
 
-	OnSwitchWeapon(CurrentWeaponIndex);
+	OnSwitchWeapon(index);
 }
