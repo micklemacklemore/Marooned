@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Marooned/Crafting/Craftable.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -50,6 +51,9 @@ AMaroonedCharacter::AMaroonedCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	CurrentWeaponIndex = 0; 
+	Weapons.Add(nullptr); // the first index is "hands" 
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -85,6 +89,9 @@ void AMaroonedCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMaroonedCharacter::Look);
+
+		// Switch Weapons
+		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this, &AMaroonedCharacter::SwitchWeapon); 
 	}
 	else
 	{
@@ -126,4 +133,25 @@ void AMaroonedCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AMaroonedCharacter::SwitchWeapon(const FInputActionValue& Value)
+{
+	if (Weapons.Num() == 0) return;
+
+	float value = Value.Get<float>();
+	int index = 0; 
+
+	if (value > 0.f)
+	{
+		// Cycle backward (handling negative indices correctly)
+		index = (CurrentWeaponIndex - 1 + Weapons.Num()) % Weapons.Num();
+	}
+	else if (value < 0.f)
+	{
+		// Cycle forward
+		index = (CurrentWeaponIndex + 1) % Weapons.Num();
+	}
+
+	OnSwitchWeapon(index);
 }

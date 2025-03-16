@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class ACraftable; 
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -44,6 +45,15 @@ class AMaroonedCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SwitchWeaponAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	int CurrentWeaponIndex; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	TArray<ACraftable*> Weapons; 
+
 public:
 	AMaroonedCharacter();
 	
@@ -55,8 +65,8 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
 
+	void SwitchWeapon(const FInputActionValue& Value); 
 protected:
 
 	virtual void NotifyControllerChanged() override;
@@ -68,5 +78,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Marooned")
+	void OnSwitchWeapon(int weaponIndex);
 };
 
