@@ -31,7 +31,9 @@ public:
 		ACraftable* craftableA, 
 		ACraftable* craftableB,
 		const FTransform& transform,
-		ECraftingSpawnerBranches& branches
+		ECraftingSpawnerBranches& branches,
+		bool destroyCraftableAOnSuccess = true,
+		bool destroyCraftableBOnSuccess = true
 	);
 
 private:
