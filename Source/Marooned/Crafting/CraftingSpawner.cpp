@@ -51,9 +51,17 @@ ACraftable* UCraftingSpawner::Craft(
     ACraftable* craftableA, 
     ACraftable* craftableB, 
     const FTransform& transform,
-    ECraftingSpawnerBranches& branches
+    ECraftingSpawnerBranches& branches,
+    bool destroyCraftableA,
+    bool destroyCraftableB
 )
 {
+    if (!IsValid(craftableA) || !IsValid(craftableB))
+    {
+        branches = ECraftingSpawnerBranches::Invalid;
+        return nullptr;
+    }
+
     const string& craftResultName = CraftingMatrix::GetCraftingResult(
         TCHAR_TO_UTF8(*(craftableA->GetResourceName())),
         TCHAR_TO_UTF8(*(craftableB->GetResourceName()))
@@ -81,8 +89,11 @@ ACraftable* UCraftingSpawner::Craft(
     ACraftable* CraftedInstance = World->SpawnActor<ACraftable>(CraftableClass, transform);
 
     // Destroy the input craftables
-    craftableA->Destroy();
-    craftableB->Destroy();
+    if (destroyCraftableA)
+        craftableA->Destroy();
+
+    if (destroyCraftableB)
+        craftableB->Destroy();
 
     // Log the crafting
     UCraftingLog::AddLogEntry(craftableA->GetClass(), craftableB->GetClass(), CraftableClass);
