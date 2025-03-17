@@ -3,6 +3,7 @@
 #include "CraftingMatrix.h"
 #include "Misc/Paths.h"
 #include "HAL/PlatformFilemanager.h"
+#include "Engine/Engine.h"
 #include <fstream>
 #include <sstream>
 #include <array>
@@ -19,6 +20,12 @@ void CraftingMatrix::Initialize()
 
     FString ProjectDir = FPaths::ProjectDir();
     FString FullPath = FPaths::ConvertRelativePathToFull(ProjectDir + "Data/CraftingMatrix.csv");
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *FullPath);
+    }
+
     ifstream file(TCHAR_TO_UTF8(*FullPath));
 
     if (!file.is_open())
@@ -26,6 +33,10 @@ void CraftingMatrix::Initialize()
         std::array<char, 256> buffer;
         strerror_s(buffer.data(), buffer.size(), errno);
         UE_LOG(LogTemp, Error, TEXT("Could not open CraftingMatrix.csv: %s"), UTF8_TO_TCHAR(buffer.data()));
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Could not open CraftingMatrix.csv: %s"));
+        }
         return;
     }
 
