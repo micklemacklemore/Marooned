@@ -25,7 +25,11 @@ void ACraftable::Tick(float DeltaTime)
 
 FString ACraftable::GetResourceName() const
 {
-	// This assumes that the class is blueprint generated (ends with "_C")
+	// This assumes that the class is blueprint generated (ends with "_C" and whatever else) 
+	// We extract the token just before the underscore.
 	FString className = GetClass()->GetName();
-	return className.Left(className.Len() - 2);
+	int32 index; 
+
+	checkf(className.FindChar('_', index), TEXT("The class name format is unexpected: %s"), *className);
+	return className.Left(index); 
 }

@@ -18,7 +18,7 @@ void CraftingMatrix::Initialize()
 {
     UE_LOG(LogTemp, Display, TEXT("Initializing Crafting Matrix"));
 
-    FString ProjectDir = FPaths::ProjectDir();
+    FString ProjectDir = FPaths::ProjectContentDir();
     FString FullPath = FPaths::ConvertRelativePathToFull(ProjectDir + "Data/CraftingMatrix.csv");
 
     if (GEngine)
@@ -33,10 +33,12 @@ void CraftingMatrix::Initialize()
         std::array<char, 256> buffer;
         strerror_s(buffer.data(), buffer.size(), errno);
         UE_LOG(LogTemp, Error, TEXT("Could not open CraftingMatrix.csv: %s"), UTF8_TO_TCHAR(buffer.data()));
+#if WITH_EDITOR
         if (GEngine)
         {
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Could not open CraftingMatrix.csv: %s"));
         }
+#endif
         return;
     }
 

@@ -31,17 +31,27 @@ void UCraftingSpawner::InitializeCraftingNamesToClasses()
 
     for (const FAssetData& AssetData : AssetDataArray)
     {
-        UBlueprint* Blueprint = Cast<UBlueprint>(AssetData.GetAsset());
-        if (Blueprint && Blueprint->GeneratedClass 
-            && !Blueprint->GeneratedClass->HasAnyClassFlags(CLASS_Abstract)
-            && !Blueprint->GeneratedClass->GetName().StartsWith(TEXT("SKEL_")))
+        // Get the full asset path
+        FString BlueprintPath = AssetData.GetObjectPathString(); 
+
+        // on standalone build / package, blueprints are thrown away and replaced with the generated class
+#if !UE_EDITOR
+        FString ClassPath = BlueprintPath;                  // blueprint generated class (already has "_C" suffix)
+#else
+        FString ClassPath = BlueprintPath + TEXT("_C");     // blueprint asset (add "_C" suffix to path to get the generated class)
+#endif
+
+        // Load the class dynamically
+        UClass* LoadedClass = LoadClass<ACraftable>(nullptr, *ClassPath);
+
+        if (LoadedClass && !LoadedClass->HasAnyClassFlags(CLASS_Abstract) && !LoadedClass->GetName().StartsWith(TEXT("SKEL_")))
         {
-            FString ResourceName = Blueprint->GeneratedClass->GetDefaultObject<ACraftable>()->GetResourceName();
-            TSubclassOf<ACraftable> CraftableClass = TSubclassOf<ACraftable>(Blueprint->GeneratedClass);
+            FString ResourceName = LoadedClass->GetDefaultObject<ACraftable>()->GetResourceName();
+            TSubclassOf<ACraftable> CraftableClass = TSubclassOf<ACraftable>(LoadedClass);
             CraftingNamesToClasses.Add(ResourceName, CraftableClass);
 
 #if !UE_BUILD_SHIPPING
-            UE_LOG(LogTemp, Display, TEXT("Added %s to crafting spawner map with class %s"), *ResourceName, *Blueprint->GeneratedClass->GetName());
+            UE_LOG(LogTemp, Display, TEXT("Added %s to crafting spawner map with class %s"), *ResourceName, *LoadedClass->GetName());
 #endif
         }
     }
