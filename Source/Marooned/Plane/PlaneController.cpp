@@ -27,40 +27,46 @@ void APlaneController::Tick(float DeltaTime)
 
 }
 
-void APlaneController::GenerateLandingPath(USplineComponent* landingPath)
+void APlaneController::GenerateLandingPath(USplineComponent* landingPath, USplineComponent* flightPath, const FVector& planeLocation)
 {	
-	FVector myLocation = GetActorLocation();
+    landingPath->ClearSplinePoints();
+    float inputKey = flightPath->FindInputKeyClosestToWorldLocation(planeLocation);
+    int nextPointIndex = FMath::CeilToInt(inputKey);
+    FVector nextPoint = flightPath->GetLocationAtSplinePoint(nextPointIndex, ESplineCoordinateSpace::World);
+    landingPath->AddSplinePoint(planeLocation, ESplineCoordinateSpace::World);
+    landingPath->AddSplinePoint(nextPoint, ESplineCoordinateSpace::World);
+
 	FVector playerLocation = GetWorld()->GetFirstPlayerController()->GetFocalLocation();
-	FVector vecToPlayer = playerLocation - myLocation;
+    APawn* playerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+    if (playerPawn) { // Only available in-game, not sim mode.
+        playerLocation = playerPawn->FindComponentByClass<USkeletalMeshComponent>()->GetComponentLocation();
+    }
+
+	FVector vecToPlayer = playerLocation - nextPoint;
 
 	float numPoints = 10;
-	float steepness = 5.0;
+	float steepness = 4.0;
+    float initialRotation = 50.0f; 
+    float rotationDecayFactor = 4.0f;
+    float cumulativeRotation = initialRotation;
 
     for (int i = 1; i < numPoints; ++i) {
         float t = static_cast<float>(i) / numPoints;
         float heightDecay = FMath::Exp(-steepness * t);
-        FVector point = myLocation + vecToPlayer * t;
-        point.Z = myLocation.Z * heightDecay;
+        float rotationDecay = FMath::Exp(-rotationDecayFactor * t);
+        FVector point = nextPoint + vecToPlayer * t;
+
+        // Rotate the point around the Z-axis with playerLocation as the pivot
+        FVector relativePoint = point - playerLocation;
+        FQuat rotationQuat = FQuat(FVector(0, 0, 1), FMath::DegreesToRadians(cumulativeRotation));
+        relativePoint = rotationQuat.RotateVector(relativePoint);
+        point = relativePoint + playerLocation;
+        
+        cumulativeRotation += (initialRotation * rotationDecay);
+        point.Z = nextPoint.Z * heightDecay;
         landingPath->AddSplinePoint(point, ESplineCoordinateSpace::World);
     }
 
 	// Add the last point at the player's location directly (since e^-x won't be 0 exactly)
 	landingPath->AddSplinePoint(playerLocation, ESplineCoordinateSpace::World);
-}
-
-FVector APlaneController::calculateCorrectionVector(
-	USplineComponent* landingPath, 
-	float deltaTime, 
-	FVector currentLocation,
-	FVector currentHeading,
-	FVector& previousError
-)
-{
-	FVector closestSplineTangent = landingPath->FindDirectionClosestToWorldLocation(currentLocation, ESplineCoordinateSpace::World);
-
-	FVector error = closestSplineTangent - currentHeading;
-	FVector derivative = (error - previousError) / deltaTime;
-	previousError = error;
-	
-	return kP * error + kD * derivative;
 }

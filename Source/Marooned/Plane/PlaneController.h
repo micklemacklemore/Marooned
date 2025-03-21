@@ -14,27 +14,13 @@ class MAROONED_API APlaneController : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APlaneController();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plane")
-	float kD = 0.0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Plane")
-	float kP = 1.0;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Plane")
-	void GenerateLandingPath(USplineComponent* landingPath);
-
-	UFUNCTION(BlueprintCallable, Category = "Plane")
-	FVector calculateCorrectionVector(
-		USplineComponent* landingPath, 
-		float deltaTime, 
-		FVector currentLocation,
-		FVector currentHeading,
-		UPARAM(ref) FVector& previousError
-	);
+	void GenerateLandingPath(USplineComponent* landingPath, USplineComponent* flightPath, const FVector& planeLocation);
 
 public:	
 	// Called every frame
