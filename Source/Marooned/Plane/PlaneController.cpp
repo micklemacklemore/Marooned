@@ -63,10 +63,17 @@ void APlaneController::GenerateLandingPath(USplineComponent* landingPath, USplin
         point = relativePoint + playerLocation;
         
         cumulativeRotation += (initialRotation * rotationDecay);
-        point.Z = nextPoint.Z * heightDecay;
+        point.Z = (nextPoint.Z - playerLocation.Z) * heightDecay + playerLocation.Z;
         landingPath->AddSplinePoint(point, ESplineCoordinateSpace::World);
     }
 
 	// Add the last point at the player's location directly (since e^-x won't be 0 exactly)
 	landingPath->AddSplinePoint(playerLocation, ESplineCoordinateSpace::World);
+    landingPath->SetTangentAtSplinePoint(landingPath->GetNumberOfSplinePoints() - 1, FVector::ZeroVector, ESplineCoordinateSpace::World);
+
+    // Set the 2nd to last point to be the same Z as the last point so the plane lands flat
+    FVector lastPoint = landingPath->GetLocationAtSplinePoint(landingPath->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+    FVector secondToLastPoint = landingPath->GetLocationAtSplinePoint(landingPath->GetNumberOfSplinePoints() - 2, ESplineCoordinateSpace::World);
+    secondToLastPoint.Z = lastPoint.Z;
+    landingPath->SetLocationAtSplinePoint(landingPath->GetNumberOfSplinePoints() - 2, secondToLastPoint, ESplineCoordinateSpace::World);
 }
