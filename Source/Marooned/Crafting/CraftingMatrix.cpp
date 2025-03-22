@@ -20,12 +20,6 @@ void CraftingMatrix::Initialize()
 
     FString ProjectDir = FPaths::ProjectDir();
     FString FullPath = FPaths::ConvertRelativePathToFull(ProjectDir + "Data/CraftingMatrix.csv");
-
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *FullPath);
-    }
-
     ifstream file(TCHAR_TO_UTF8(*FullPath));
 
     if (!file.is_open())
