@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Crafting")
 	FString GetResourceName() const;
 
+    virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

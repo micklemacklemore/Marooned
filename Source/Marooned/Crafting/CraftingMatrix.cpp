@@ -19,7 +19,7 @@ void CraftingMatrix::Initialize()
     UE_LOG(LogTemp, Display, TEXT("Initializing Crafting Matrix"));
 
     FString ProjectDir = FPaths::ProjectDir();
-    FString FullPath = FPaths::ConvertRelativePathToFull(ProjectDir + "Data/CraftingMatrix.csv");
+    FString FullPath = FPaths::ConvertRelativePathToFull(ProjectDir + "Content/Data/CraftingMatrix.csv");
     ifstream file(TCHAR_TO_UTF8(*FullPath));
 
     if (!file.is_open())

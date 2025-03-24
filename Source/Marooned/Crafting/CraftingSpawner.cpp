@@ -31,17 +31,25 @@ void UCraftingSpawner::InitializeCraftingNamesToClasses()
 
     for (const FAssetData& AssetData : AssetDataArray)
     {
-        UBlueprint* Blueprint = Cast<UBlueprint>(AssetData.GetAsset());
-        if (Blueprint && Blueprint->GeneratedClass 
-            && !Blueprint->GeneratedClass->HasAnyClassFlags(CLASS_Abstract)
-            && !Blueprint->GeneratedClass->GetName().StartsWith(TEXT("SKEL_")))
+#if !WITH_EDITOR
+        UClass* CraftableClass = Cast<UClass>(AssetData.GetAsset());
+#else
+        UBlueprint* blueprint = Cast<UBlueprint>(AssetData.GetAsset());
+        UClass* CraftableClass = nullptr;
+        if (blueprint && !blueprint->GeneratedClass->HasAnyClassFlags(CLASS_Abstract)
+            && !blueprint->GeneratedClass->GetName().StartsWith(TEXT("SKEL_"))) {
+            CraftableClass = blueprint->GeneratedClass;
+        }
+#endif
+
+        if (CraftableClass && CraftableClass->IsChildOf(ACraftable::StaticClass()))
         {
-            FString ResourceName = Blueprint->GeneratedClass->GetDefaultObject<ACraftable>()->GetResourceName();
-            TSubclassOf<ACraftable> CraftableClass = TSubclassOf<ACraftable>(Blueprint->GeneratedClass);
-            CraftingNamesToClasses.Add(ResourceName, CraftableClass);
+            FString ResourceName = CraftableClass->GetDefaultObject<ACraftable>()->GetResourceName();
+            TSubclassOf<ACraftable> CraftableSubclass = CraftableClass;
+            CraftingNamesToClasses.Add(ResourceName, CraftableSubclass);
 
 #if !UE_BUILD_SHIPPING
-            UE_LOG(LogTemp, Display, TEXT("Added %s to crafting spawner map with class %s"), *ResourceName, *Blueprint->GeneratedClass->GetName());
+            UE_LOG(LogTemp, Display, TEXT("Added %s to crafting spawner map with class %s"), *ResourceName, *CraftableClass->GetName());
 #endif
         }
     }
