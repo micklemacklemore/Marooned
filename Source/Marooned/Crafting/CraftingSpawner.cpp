@@ -18,7 +18,9 @@ void UCraftingSpawner::InitializeCraftingNamesToClasses()
     FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
     IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
     
-    // Force rescan of asset paths
+    // Force rescan of asset paths. Not sure if this is actually necessary.
+    // What IS necessary, however, is to change the asset manager settings such that all craftable assets are always cooked / included in the build.
+    // This also requires overriding the GetPrimaryAssetID() function in Craftable.h
     TArray<FString> PathsToScan;
     PathsToScan.Add(TEXT("/Game/Marooned/Assets/Craftables"));
     AssetRegistry.ScanPathsSynchronous(PathsToScan, true);
@@ -34,6 +36,7 @@ void UCraftingSpawner::InitializeCraftingNamesToClasses()
 #if !WITH_EDITOR
         UClass* CraftableClass = Cast<UClass>(AssetData.GetAsset());
 #else
+        // In the editor, we need to get the generated class from the blueprint. In a packaged game, the class is generated already.
         UBlueprint* blueprint = Cast<UBlueprint>(AssetData.GetAsset());
         UClass* CraftableClass = nullptr;
         if (blueprint && !blueprint->GeneratedClass->HasAnyClassFlags(CLASS_Abstract)
