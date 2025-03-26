@@ -26,7 +26,7 @@
 !/RawContent/**/*
 
 # Include Data folder
-!/Data/**
+!/Content/Data/**
 
 # OS/platform generated files.
 
