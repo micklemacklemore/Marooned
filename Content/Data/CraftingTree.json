@@ -1,5 +1,5 @@
 {
-    "ResourceName": "EscapeBySignal",
+    "ResourceName": "Escape",
     "Children": [
         {
             "ResourceName": "Radio",
@@ -61,10 +61,10 @@
                     ]
                 },
                 {
-                    "ResourceName": "BrokenRadio(3)",
+                    "ResourceName": "BrokenRadio3",
                     "Children": [
                         {
-                            "ResourceName": "BrokenRadio(2)",
+                            "ResourceName": "BrokenRadio2",
                             "Children": [
                                 {
                                     "ResourceName": "Battery",
