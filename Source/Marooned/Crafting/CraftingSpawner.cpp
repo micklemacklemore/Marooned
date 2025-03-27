@@ -6,6 +6,8 @@
 #include "Crafting/CraftingLog.h"
 #include <string>
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "Engine/StreamableManager.h"
+#include "Engine/AssetManager.h"
 
 UCraftingSpawner::UCraftingSpawner()
 {
@@ -31,6 +33,9 @@ void UCraftingSpawner::InitializeCraftingNamesToClasses()
     AssetRegistry.GetAssetsByPath(TEXT("/Game/Marooned/Assets/Craftables"), AssetDataArray, true);
     UE_LOG(LogTemp, Display, TEXT("Found %d ACraftable assets"), AssetDataArray.Num());
 
+    // While we're here, load all the assets so we don't have runtime lag
+    FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
     for (const FAssetData& AssetData : AssetDataArray)
     {
 #if !WITH_EDITOR
@@ -47,13 +52,19 @@ void UCraftingSpawner::InitializeCraftingNamesToClasses()
 
         if (CraftableClass && CraftableClass->IsChildOf(ACraftable::StaticClass()))
         {
-            FString ResourceName = CraftableClass->GetDefaultObject<ACraftable>()->GetResourceName();
-            TSubclassOf<ACraftable> CraftableSubclass = CraftableClass;
-            CraftingNamesToClasses.Add(ResourceName, CraftableSubclass);
+            // Preload the craftable asset into memory
+            FString AssetPath = AssetData.ObjectPath.ToString();
+            Streamable.RequestAsyncLoad(FSoftObjectPath(AssetPath), FStreamableDelegate::CreateLambda([this, CraftableClass, AssetPath]()
+            {
+                // When the asset is loaded, add it to the crafting map
+                FString ResourceName = CraftableClass->GetDefaultObject<ACraftable>()->GetResourceName();
+                TSubclassOf<ACraftable> CraftableSubclass = CraftableClass;
+                CraftingNamesToClasses.Add(ResourceName, CraftableSubclass);
 
 #if !UE_BUILD_SHIPPING
-            UE_LOG(LogTemp, Display, TEXT("Added %s to crafting spawner map with class %s"), *ResourceName, *CraftableClass->GetName());
+                UE_LOG(LogTemp, Display, TEXT("Added %s to crafting spawner map with class %s"), *ResourceName, *CraftableClass->GetName());
 #endif
+            }));
         }
     }
 }
