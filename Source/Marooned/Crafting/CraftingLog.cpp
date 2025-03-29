@@ -3,7 +3,7 @@
 
 #include "Crafting/CraftingLog.h"
 
-TSet<FCraftingLogEntry> UCraftingLog::m_log = {};
+TMap<TSubclassOf<ACraftable>, FCraftingLogEntry> UCraftingLog::m_log = {};
 
 void UCraftingLog::AddLogEntry(TSubclassOf<ACraftable> firstCraftable, TSubclassOf<ACraftable> secondCraftable, TSubclassOf<ACraftable> resultCraftable)
 {
@@ -18,7 +18,11 @@ void UCraftingLog::AddLogEntry(TSubclassOf<ACraftable> firstCraftable, TSubclass
     FCraftingLogEntry entry;
     entry.firstCraftable = firstCraftable;
     entry.secondCraftable = secondCraftable;
-    entry.resultCraftable = resultCraftable;
 
-    m_log.Add(entry);
+    m_log.Add(resultCraftable, entry);
+}
+
+bool UCraftingLog::ContainsCraftingLogEntry(TSubclassOf<ACraftable> resultCraftable)
+{
+    return m_log.Contains(resultCraftable);
 }

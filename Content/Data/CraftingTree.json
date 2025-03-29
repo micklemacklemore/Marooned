@@ -1,0 +1,141 @@
+{
+    "ResourceName": "Escape",
+    "Children": [
+        {
+            "ResourceName": "Radio",
+            "Children": [
+                {
+                    "ResourceName": "Antenna",
+                    "Children": [
+                        {
+                            "ResourceName": "Hammer",
+                            "Children": [
+                                {
+                                    "ResourceName": "SteelIngot",
+                                    "Children": [
+                                        {
+                                            "ResourceName": "IronOre",
+                                            "Children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "ResourceName": "HammerCast",
+                                    "Children": [
+                                        {
+                                            "ResourceName": "Clay",
+                                            "Children": [
+                                                {
+                                                    "ResourceName": "Mud",
+                                                    "Children": []
+                                                },
+                                                {
+                                                    "ResourceName": "Fire",
+                                                    "Children": [
+                                                        {
+                                                            "ResourceName": "WoodLog",
+                                                            "Children": [
+                                                                {
+                                                                    "ResourceName": "Axe",
+                                                                    "Children": []
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "ResourceName": "CopperIngot",
+                            "Children": [
+                                {
+                                    "ResourceName": "CopperOre",
+                                    "Children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "ResourceName": "BrokenRadio3",
+                    "Children": [
+                        {
+                            "ResourceName": "BrokenRadio2",
+                            "Children": [
+                                {
+                                    "ResourceName": "Battery",
+                                    "Children": [
+                                        {
+                                            "ResourceName": "Lemon",
+                                            "Children": []
+                                        },
+                                        {
+                                            "ResourceName": "CopperIngot",
+                                            "Children": [
+                                                {
+                                                    "ResourceName": "CopperOre",
+                                                    "Children": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "ResourceName": "Crystal",
+                            "Children": [
+                                {
+                                    "ResourceName": "Glass",
+                                    "Children": [
+                                        {
+                                            "ResourceName": "Fire",
+                                            "Children": [
+                                                {
+                                                    "ResourceName": "WoodLog",
+                                                    "Children": [
+                                                        {
+                                                            "ResourceName": "Axe",
+                                                            "Children": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "ResourceName": "SmokeSignal",
+            "Children": [
+                {
+                    "ResourceName": "PalmLeaves",
+                    "Children": []
+                },
+                {
+                    "ResourceName": "Fire",
+                    "Children": [
+                        {
+                            "ResourceName": "WoodLog",
+                            "Children": [
+                                {
+                                    "ResourceName": "Axe",
+                                    "Children": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

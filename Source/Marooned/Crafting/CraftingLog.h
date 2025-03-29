@@ -16,14 +16,6 @@ struct FCraftingLogEntry
 
 	TSubclassOf<ACraftable> firstCraftable;
 	TSubclassOf<ACraftable> secondCraftable;
-	TSubclassOf<ACraftable> resultCraftable;
-
-	bool operator==(const FCraftingLogEntry& other) const
-	{
-		// We only care about the first two craftables, since the result is always the same
-		return firstCraftable == other.firstCraftable
-			&& secondCraftable == other.secondCraftable;
-	}
 };
 
 FORCEINLINE uint32 GetTypeHash(const FCraftingLogEntry& entry)
@@ -45,11 +37,14 @@ public:
 	static void AddLogEntry(TSubclassOf<ACraftable> firstCraftable, TSubclassOf<ACraftable> secondCraftable, TSubclassOf<ACraftable> resultCraftable);
 
 	UFUNCTION(BlueprintCallable, Category = "Crafting")
-	static TArray<FCraftingLogEntry> GetCraftingLog() { return m_log.Array(); }
+	static TMap<TSubclassOf<ACraftable>, FCraftingLogEntry> GetCraftingLog() { return m_log; }
+
+	UFUNCTION(BlueprintCallable, Category = "Crafting")
+	static bool ContainsCraftingLogEntry(TSubclassOf<ACraftable> resultCraftable);
 	
 private:
 	UCraftingLog() {};
 	~UCraftingLog() {};
 
-	static TSet<FCraftingLogEntry> m_log;
+	static TMap<TSubclassOf<ACraftable>, FCraftingLogEntry> m_log;
 };
