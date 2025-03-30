@@ -35,7 +35,7 @@ AMaroonedCharacter::AMaroonedCharacter()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -92,12 +92,27 @@ void AMaroonedCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Switch Weapons
 		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this, &AMaroonedCharacter::SwitchWeapon); 
+
+		// Sprinting
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AMaroonedCharacter::StartSprinting);
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AMaroonedCharacter::StopSprinting);
 	}
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
+
+void AMaroonedCharacter::StartSprinting()
+{
+    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void AMaroonedCharacter::StopSprinting()
+{
+    GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
 
 void AMaroonedCharacter::Move(const FInputActionValue& Value)
 {

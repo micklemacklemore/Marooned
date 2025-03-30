@@ -54,6 +54,15 @@ class AMaroonedCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
 	TArray<ACraftable*> Weapons; 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	float SprintSpeed = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	UInputAction* SprintAction;
+
 public:
 	AMaroonedCharacter();
 	
@@ -67,6 +76,10 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	void SwitchWeapon(const FInputActionValue& Value); 
+
+	void StartSprinting();
+	void StopSprinting();
+
 protected:
 
 	virtual void NotifyControllerChanged() override;
