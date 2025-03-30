@@ -35,7 +35,7 @@ AMaroonedCharacter::AMaroonedCharacter()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -56,6 +56,9 @@ AMaroonedCharacter::AMaroonedCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	// Sprinting
+	Energy = MaxEnergy;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -92,12 +95,35 @@ void AMaroonedCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Switch Weapons
 		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this, &AMaroonedCharacter::SwitchWeapon); 
+
+		// Sprinting
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AMaroonedCharacter::StartSprinting);
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AMaroonedCharacter::StopSprinting);
 	}
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
+
+void AMaroonedCharacter::StartSprinting()
+{
+    if (Energy > 0.0f)
+    {
+        GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		GetWorldTimerManager().ClearTimer(EnergyRegenTimerHandle);
+        GetWorldTimerManager().SetTimer(EnergyDrainTimerHandle, this, &AMaroonedCharacter::DrainEnergy, energyTimerPeriod, true);
+    }
+}
+
+void AMaroonedCharacter::StopSprinting()
+{
+    GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+    GetWorldTimerManager().ClearTimer(EnergyDrainTimerHandle);
+    GetWorldTimerManager().SetTimer(EnergyRegenTimerHandle, this, &AMaroonedCharacter::RegenerateEnergy, energyTimerPeriod, true);
+}
+
+
 
 void AMaroonedCharacter::Move(const FInputActionValue& Value)
 {
@@ -154,4 +180,30 @@ void AMaroonedCharacter::SwitchWeapon(const FInputActionValue& Value)
 	}
 
 	OnSwitchWeapon(index);
+}
+
+void AMaroonedCharacter::DrainEnergy()
+{
+    Energy -= (EnergyDrainRate * energyTimerPeriod);
+
+    if (Energy <= 0.0f)
+    {
+        Energy = 0.0f;
+        StopSprinting();
+    }
+
+	OnDrainEnergy();
+}
+
+void AMaroonedCharacter::RegenerateEnergy()
+{
+    Energy += (EnergyRegenRate * energyTimerPeriod);
+
+    if (Energy >= MaxEnergy)
+    {
+        Energy = MaxEnergy;
+        GetWorldTimerManager().ClearTimer(EnergyRegenTimerHandle);
+    }
+
+	OnRegenerateEnergy();
 }

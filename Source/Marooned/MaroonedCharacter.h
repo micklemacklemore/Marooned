@@ -54,6 +54,33 @@ class AMaroonedCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
 	TArray<ACraftable*> Weapons; 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	float SprintSpeed = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+	UInputAction* SprintAction;
+
+    // Energy variable exposed to Blueprints
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+    float Energy;
+
+    // Maximum energy
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+    float MaxEnergy = 100.f;
+
+    // Energy drain rate while sprinting
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+    float EnergyDrainRate = 10.f;
+
+    // Energy regeneration rate
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Marooned", meta = (AllowPrivateAccess = "true"))
+    float EnergyRegenRate = 5.f;
+
+	float energyTimerPeriod = 0.1f; // timers loop every 0.1 seconds
+
 public:
 	AMaroonedCharacter();
 	
@@ -67,6 +94,22 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	void SwitchWeapon(const FInputActionValue& Value); 
+
+	void StartSprinting();
+	void StopSprinting();
+
+	FTimerHandle EnergyDrainTimerHandle;
+	FTimerHandle EnergyRegenTimerHandle;
+    void DrainEnergy();
+    void RegenerateEnergy();
+
+    // Blueprint extension points
+    UFUNCTION(BlueprintImplementableEvent, Category = "Marooned")
+    void OnDrainEnergy();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Marooned")
+    void OnRegenerateEnergy();
+
 protected:
 
 	virtual void NotifyControllerChanged() override;
