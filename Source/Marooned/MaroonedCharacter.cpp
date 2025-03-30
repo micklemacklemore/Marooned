@@ -56,6 +56,9 @@ AMaroonedCharacter::AMaroonedCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	// Sprinting
+	Energy = MaxEnergy;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,13 +108,21 @@ void AMaroonedCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AMaroonedCharacter::StartSprinting()
 {
-    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+    if (Energy > 0.0f)
+    {
+        GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		GetWorldTimerManager().ClearTimer(EnergyRegenTimerHandle);
+        GetWorldTimerManager().SetTimer(EnergyDrainTimerHandle, this, &AMaroonedCharacter::DrainEnergy, energyTimerPeriod, true);
+    }
 }
 
 void AMaroonedCharacter::StopSprinting()
 {
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+    GetWorldTimerManager().ClearTimer(EnergyDrainTimerHandle);
+    GetWorldTimerManager().SetTimer(EnergyRegenTimerHandle, this, &AMaroonedCharacter::RegenerateEnergy, energyTimerPeriod, true);
 }
+
 
 
 void AMaroonedCharacter::Move(const FInputActionValue& Value)
@@ -169,4 +180,30 @@ void AMaroonedCharacter::SwitchWeapon(const FInputActionValue& Value)
 	}
 
 	OnSwitchWeapon(index);
+}
+
+void AMaroonedCharacter::DrainEnergy()
+{
+    Energy -= (EnergyDrainRate * energyTimerPeriod);
+
+    if (Energy <= 0.0f)
+    {
+        Energy = 0.0f;
+        StopSprinting();
+    }
+
+	OnDrainEnergy();
+}
+
+void AMaroonedCharacter::RegenerateEnergy()
+{
+    Energy += (EnergyRegenRate * energyTimerPeriod);
+
+    if (Energy >= MaxEnergy)
+    {
+        Energy = MaxEnergy;
+        GetWorldTimerManager().ClearTimer(EnergyRegenTimerHandle);
+    }
+
+	OnRegenerateEnergy();
 }
