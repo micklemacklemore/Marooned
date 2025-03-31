@@ -33,7 +33,7 @@ class MAROONED_API UHintSystem : public UObject
 	GENERATED_BODY()
 
 public:
-	UHintSystem() = default;
+	UHintSystem();
 
 	void Initialize(
 		const TMap<FString, TSubclassOf<ACraftable>>& craftingNamesToClasses
@@ -48,6 +48,7 @@ private:
 	CraftingTreeNode GetNextCraftableForHint(CraftingTreeNode Node);
 
 	CraftingTreeNode CraftableTree;
+	UDataTable* CraftingHintTable = nullptr;
 
 	UPROPERTY()
 	TMap<FString, TSubclassOf<ACraftable>> CraftingNamesToClasses;
