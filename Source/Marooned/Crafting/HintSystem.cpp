@@ -6,6 +6,20 @@
 #include "Crafting/CraftingLog.h"
 #include "Engine/DataTable.h"
 
+UHintSystem::UHintSystem() {
+    static ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/Marooned/Assets/UI/CraftingHintTable.CraftingHintTable'"));
+    if (DataTableAsset.Succeeded())
+    {
+        CraftingHintTable = DataTableAsset.Object;
+        UE_LOG(LogTemp, Display, TEXT("CraftingHintTable loaded successfully"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load CraftingHintTable"));
+        return;
+    }
+}
+
 void UHintSystem::Initialize(
     const TMap<FString, TSubclassOf<ACraftable>>& craftingNamesToClasses
 ) {
@@ -91,13 +105,6 @@ TArray<FText> UHintSystem::GetHint() {
     FString ResourceName = NextCraftable.Craftable->GetDefaultObject<ACraftable>()->GetResourceName();
     UE_LOG(LogTemp, Display, TEXT("Next hint for craftable: %s"), *ResourceName);
 #endif
-
-    UDataTable* CraftingHintTable = LoadObject<UDataTable>(nullptr, TEXT("DataTable'/Game/Marooned/Assets/UI/CraftingHintTable.CraftingHintTable'"));
-    if (!CraftingHintTable)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to load CraftingHintTable"));
-        return TArray<FText>();
-    }
 
     // This isn't super scalable, but we don't have many hints. And it allows us to:
     // 1. Map a craftable class to a hint, rather than a hardcoded string row name. This means we can change the craftable names and not have to update the data table.
