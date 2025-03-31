@@ -25,7 +25,7 @@ class MAROONED_API UCraftingSpawner : public UObject
 
 public:
 	UCraftingSpawner() = default;
-	void Initialize(const TMap<FString, TSubclassOf<ACraftable>>* craftingNamesToClasses);
+	void Initialize(const TMap<FString, TSubclassOf<ACraftable>>& craftingNamesToClasses);
 
 	UFUNCTION( BlueprintCallable, Category = "Crafting", Meta = (ExpandEnumAsExecs = "branches"))
 	ACraftable* Craft(
@@ -38,5 +38,6 @@ public:
 	);
 
 private:
-	const TMap<FString, TSubclassOf<ACraftable>>* CraftingNamesToClasses;
+	UPROPERTY()
+	TMap<FString, TSubclassOf<ACraftable>> CraftingNamesToClasses;
 };
