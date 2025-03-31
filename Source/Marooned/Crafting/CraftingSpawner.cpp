@@ -6,7 +6,7 @@
 #include "Crafting/CraftingLog.h"
 
 void UCraftingSpawner::Initialize(
-    const TMap<FString, TSubclassOf<ACraftable>>* craftingNamesToClasses
+    const TMap<FString, TSubclassOf<ACraftable>>& craftingNamesToClasses
 )
 {
     CraftingNamesToClasses = craftingNamesToClasses;
@@ -42,13 +42,13 @@ ACraftable* UCraftingSpawner::Craft(
         return nullptr;
     }
     
-    check(CraftingNamesToClasses->Contains(FString(craftResultName.c_str())));
+    check(CraftingNamesToClasses.Contains(FString(craftResultName.c_str())));
 
     // Get the world context
     UWorld* World = craftableA->GetWorld();
 
     branches = ECraftingSpawnerBranches::Valid;
-    TSubclassOf<ACraftable> CraftableClass = (*CraftingNamesToClasses)[FString(craftResultName.c_str())];
+    TSubclassOf<ACraftable> CraftableClass = CraftingNamesToClasses[FString(craftResultName.c_str())];
     
     // Spawn the crafted instance
     ACraftable* CraftedInstance = World->SpawnActor<ACraftable>(CraftableClass, transform);

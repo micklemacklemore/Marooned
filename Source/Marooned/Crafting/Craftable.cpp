@@ -29,8 +29,3 @@ FString ACraftable::GetResourceName() const
 	FString className = GetClass()->GetName();
 	return className.Left(className.Len() - 2);
 }
-
-FPrimaryAssetId ACraftable::GetPrimaryAssetId() const
-{
-	return FPrimaryAssetId(TEXT("Craftable"), GetFName());
-}

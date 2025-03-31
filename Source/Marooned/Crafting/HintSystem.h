@@ -36,7 +36,7 @@ public:
 	UHintSystem() = default;
 
 	void Initialize(
-		const TMap<FString, TSubclassOf<ACraftable>>* craftingNamesToClasses
+		const TMap<FString, TSubclassOf<ACraftable>>& craftingNamesToClasses
 	);
 
 	UFUNCTION(BlueprintCallable, Category = "Crafting")
@@ -48,5 +48,7 @@ private:
 	CraftingTreeNode GetNextCraftableForHint(CraftingTreeNode Node);
 
 	CraftingTreeNode CraftableTree;
-	const TMap<FString, TSubclassOf<ACraftable>>* CraftingNamesToClasses;
+
+	UPROPERTY()
+	TMap<FString, TSubclassOf<ACraftable>> CraftingNamesToClasses;
 };

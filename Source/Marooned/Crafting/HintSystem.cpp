@@ -7,7 +7,7 @@
 #include "Engine/DataTable.h"
 
 void UHintSystem::Initialize(
-    const TMap<FString, TSubclassOf<ACraftable>>* craftingNamesToClasses
+    const TMap<FString, TSubclassOf<ACraftable>>& craftingNamesToClasses
 ) {
     UE_LOG(LogTemp, Display, TEXT("Initializing Hint System"));
 
@@ -47,13 +47,13 @@ bool UHintSystem::ParseCraftableTreeNode(TSharedPtr<FJsonObject> JsonObject, Cra
         return false;
     }
 
-    if (!CraftingNamesToClasses->Contains(ResourceName))
+    if (!CraftingNamesToClasses.Contains(ResourceName))
     {
         UE_LOG(LogTemp, Error, TEXT("Craftable class not found for ResourceName: %s"), *ResourceName);
         return false;
     }
 
-    Node.Craftable = (*CraftingNamesToClasses)[ResourceName];
+    Node.Craftable = CraftingNamesToClasses[ResourceName];
 
     const TArray<TSharedPtr<FJsonValue>>* ChildrenArray;
     if (!JsonObject->TryGetArrayField(TEXT("Children"), ChildrenArray))
